@@ -22,15 +22,34 @@ void setup() {
   pinMode(relay, OUTPUT);
 }
 
+int toggle = 0;
+float tempValue = 5;
+
 void loop() {
-  float tempC = sensors.getTempCByIndex(0);
-  display.showNumberDec(tempC);
-  Serial.println(tempC);
-  if (tempC < 3){
-    digitalWrite(relay, HIGH);
+  if (Serial.available()) {
+    String inp = Serial.readStringUntil('\n');
+    if (inp.charAt(0) == 'x') {
+      toggle = 0;
+    }
+    if (inp.charAt(0) == 't'){
+      int num = inp.substring(1, inp.length()).toInt();
+      toggle = 1;
+    }
   }
-  if (tempC < 7){
-    digitalWrite(relay, LOW);
+  if (toggle == 0) {
+    sensors.requestTemperatures();
+    float tempC = sensors.getTempCByIndex(0);
+    display.showNumberDec(tempC);
+    Serial.println(tempC);
+    if (tempC < 3) {
+      digitalWrite(relay, HIGH);
+    }
+    if (tempC < 7) {
+      digitalWrite(relay, LOW);
+    }
+    delay(1000);
   }
-  delay(1000);
+  if (toggle = 1){
+    display.showNumberDec(tempValue);
+  }
 }
